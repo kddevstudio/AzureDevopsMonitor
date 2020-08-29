@@ -5,7 +5,6 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using AzureDevOpsMonitor.BackgroundServices;
-using McMaster.AspNetCore.LetsEncrypt;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
@@ -16,6 +15,8 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.IdentityModel.Tokens;
+using LettuceEncrypt;
+using Microsoft.Extensions.Logging;
 
 namespace AzureDevOpsMonitor
 {
@@ -40,11 +41,11 @@ namespace AzureDevOpsMonitor
             services.AddSingleton<NotificationProcessChannel>();
             services.AddHostedService<NotificationProcessService>();
 
-            var letsEncryptServiceBuilder = services.AddLetsEncrypt();
+            var letsEncryptServiceBuilder = services.AddLettuceEncrypt();
 
-            if (Configuration.GetSection("LetsEncrypt:PersistToDisk").Value.Equals(Boolean.TrueString))
+            if (Configuration.GetSection("LettuceEncrypt:PersistToDisk").Value.Equals(Boolean.TrueString))
             {
-                letsEncryptServiceBuilder.PersistDataToDirectory(new DirectoryInfo(Configuration.GetSection("LetsEncrypt:PersistDirectory").Value), Configuration.GetSection("LetsEncrypt:PersistPassword").Value);
+                letsEncryptServiceBuilder.PersistDataToDirectory(new DirectoryInfo(Configuration.GetSection("LettuceEncrypt:PersistDirectory").Value), Configuration.GetSection("LettuceEncrypt:PersistPassword").Value);
             }
 
             services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
